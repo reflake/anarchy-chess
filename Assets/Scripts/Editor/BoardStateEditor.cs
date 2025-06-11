@@ -79,7 +79,7 @@ namespace Editor
 
 			foreach (var position in boardState.PiecePositions)
 			{
-				var piece = Instantiate(position.Prefab);
+				var piece = PrefabUtility.InstantiatePrefab(position.Prefab) as Piece;
 				
 				board.Put(piece, position.LocalPosition);
 			}
