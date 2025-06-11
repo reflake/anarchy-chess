@@ -1,9 +1,20 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Entity
 {
-	public class Piece : MonoBehaviour
+	public enum PieceColor
 	{
+		Custom = -1,
+		Undefined = 0,
+		White,
+		Black
+	}
+	
+	public abstract class Piece : MonoBehaviour
+	{
+		[SerializeField] private PieceColor color;
+		
 		public Board Board => _board;
 		
 		private Board _board = null;
