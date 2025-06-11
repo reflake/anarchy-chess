@@ -38,5 +38,24 @@ namespace Entity
 				Mathf.FloorToInt(localPosition.x), 
 				Mathf.FloorToInt(localPosition.z));
 		}
+
+		public void Put(Piece piece, Vector2Int localPosition)
+		{
+			var worldPosition = new Vector3(localPosition.x, 0, localPosition.y);
+			
+			// Normalize coordinates
+			worldPosition.x /= columns;
+			worldPosition.z /= rows;
+			worldPosition -= new Vector3(0.5f, 0, 0.5f);
+			
+			// Convert to world position relative to board
+			worldPosition.x *= width;
+			worldPosition.z *= length;
+			worldPosition = transform.TransformPoint(worldPosition);
+
+			// Put the piece in the center of a cell
+			Vector3 offset = new Vector3(width / columns / 2, 0, length / rows / 2);
+			piece.transform.position = worldPosition + offset;
+		}
 	}
 }
