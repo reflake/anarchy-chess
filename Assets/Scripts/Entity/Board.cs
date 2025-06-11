@@ -1,3 +1,4 @@
+using Data;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,15 +12,6 @@ namespace Entity
 		public Bounds Bounds => new Bounds(Vector3.zero, new Vector3(width, 1f, length));
 		public int Rows => rows;
 		public int Columns => columns;
-
-		private void OnDrawGizmosSelected()
-		{
-			using (new Handles.DrawingScope())
-			{
-				Handles.color = Color.blue;
-				Handles.DrawWireCube(Vector3.zero, new Vector3(width, 0.5f, length));
-			}
-		}
 
 		public Vector2Int GetPositionOnBoard(Piece piece)
 		{
@@ -56,6 +48,44 @@ namespace Entity
 			// Put the piece in the center of a cell
 			Vector3 offset = new Vector3(width / columns / 2, 0, length / rows / 2);
 			piece.transform.position = worldPosition + offset;
+
+			piece.SetBoard(this);
+		}
+
+		public void PlacePieces(BoardState boardState)
+		{
+			// Remove pieces which previously occupied board
+			var previousPieces = GameObject.FindObjectsOfType<Piece>();
+
+			foreach (var piece in previousPieces)
+			{
+				if (piece.Board == this || IsPieceOnBoard(piece))
+				{
+					Destroy(piece.gameObject);
+				}
+			}
+			
+			foreach (var piecePosition in boardState.PiecePositions)
+			{
+				Piece piece = Instantiate(piecePosition.Prefab);
+				Put(piece, piecePosition.LocalPosition);
+			}
+		}
+		
+		public bool IsPieceOnBoard(Piece piece)
+		{
+			var localPosition = transform.InverseTransformPoint(piece.transform.position);
+			
+			return Bounds.Contains(localPosition);
+		}
+
+		private void OnDrawGizmosSelected()
+		{
+			using (new Handles.DrawingScope())
+			{
+				Handles.color = Color.blue;
+				Handles.DrawWireCube(Vector3.zero, new Vector3(width, 0.5f, length));
+			}
 		}
 	}
 }

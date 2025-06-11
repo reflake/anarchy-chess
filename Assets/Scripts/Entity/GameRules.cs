@@ -17,12 +17,7 @@ namespace Entity
 			if (board == null)
 				return;
 			
-			foreach (var piecePosition in boardState.PiecePositions)
-			{
-				Piece piece = Instantiate(piecePosition.Prefab);
-				
-				board.Put(piece, piecePosition.LocalPosition);
-			}
+			board.PlacePieces(boardState);
 		}
 	}
 }

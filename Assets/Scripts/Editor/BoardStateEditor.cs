@@ -1,7 +1,6 @@
 using Data;
 using Entity;
 using UnityEditor;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 
 namespace Editor
@@ -12,41 +11,77 @@ namespace Editor
 		public override void OnInspectorGUI()
 		{
 			base.OnInspectorGUI();
+			
+			var boardState = (BoardState)target;
+
+			if (boardState == null)
+				return;
 
 			if (GUILayout.Button("Read Board"))
 			{
-				var boardState = (BoardState)target;
+				ReadBoard(boardState);
+			}
 
-				if (boardState == null)
-					return;
-				
-				boardState.Clear();
-				
-				var board = GameObject.FindFirstObjectByType<Board>();
+			if (GUILayout.Button("Place Pieces"))
+			{
+				PlacePieces(boardState);
+			}
+		}
 
-				if (board == null)
+		private void ReadBoard(BoardState boardState)
+		{
+			boardState.Clear();
+				
+			var board = GameObject.FindFirstObjectByType<Board>();
+
+			if (board == null)
+			{
+				Debug.Log("Place a board onto scene");
+				return;
+			}
+				
+			var pieces = GameObject.FindObjectsOfType<Piece>();
+
+			foreach (var piece in pieces)
+			{
+				if (!board.IsPieceOnBoard(piece))
+					continue;
+
+				var prefab = PrefabUtility.GetCorrespondingObjectFromSource(piece);
+					
+				if (prefab == null)
+					continue;
+					
+				var positionOnBoard = board.GetPositionOnBoard(piece);
+				boardState.PlacePiece(positionOnBoard, prefab);
+			}
+		}
+
+		private void PlacePieces(BoardState boardState)
+		{
+			var board = GameObject.FindFirstObjectByType<Board>();
+
+			if (board == null)
+			{
+				Debug.Log("No board to place pieces on");
+				return;
+			}
+			
+			var previousPieces = GameObject.FindObjectsOfType<Piece>();
+
+			foreach (var piece in previousPieces)
+			{
+				if (board.IsPieceOnBoard(piece))
 				{
-					Debug.Log("Place a board onto scene");
-					return;
+					DestroyImmediate(piece.gameObject);
 				}
+			}
+
+			foreach (var position in boardState.PiecePositions)
+			{
+				var piece = Instantiate(position.Prefab);
 				
-				var pieces = GameObject.FindObjectsOfType<Piece>();
-
-				foreach (var piece in pieces)
-				{
-					var localPosition = board.transform.InverseTransformPoint(piece.transform.position);
-
-					if (!board.Bounds.Contains(localPosition))
-						continue;
-					
-					var prefab = PrefabUtility.GetCorrespondingObjectFromSource(piece);
-					
-					if (prefab == null)
-						continue;
-					
-					var positionOnBoard = board.GetPositionOnBoard(piece);
-					boardState.PlacePiece(positionOnBoard, prefab);
-				}
+				board.Put(piece, position.LocalPosition);
 			}
 		}
 	}
