@@ -1,5 +1,9 @@
+using System;
+using System.Collections.Generic;
+using TriInspector;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Utility;
 
 namespace Entity
 {
@@ -10,10 +14,22 @@ namespace Entity
 		White,
 		Black
 	}
+
+	[Flags]
+	public enum MovePattern
+	{
+		Pawn = 0x1,
+		Knight = 0x2,
+		Straight = 0x4,
+		Diagonal = 0x8,
+		OneStep = 0x10
+	}
 	
-	public abstract class Piece : MonoBehaviour
+	public class Piece : MonoBehaviour
 	{
 		[SerializeField] private PieceColor color;
+		[SerializeField, EnumToggleButtons] 
+		private MovePattern pattern;
 		
 		public Board Board => _board;
 		
@@ -22,6 +38,21 @@ namespace Entity
 		public void SetBoard(Board board)
 		{
 			_board = board;
+		}
+
+		public Vector2Int GetPositionOnBoard()
+		{
+			if (_board == null)
+			{
+				throw new NullReferenceException("Piece is not bound to any Board");
+			}
+			
+			return _board.GetPositionOnBoard(this);
+		}
+
+		public void GetPossibleMoves()
+		{
+			
 		}
 	}
 }

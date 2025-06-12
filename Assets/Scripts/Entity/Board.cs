@@ -79,6 +79,12 @@ namespace Entity
 			return Bounds.Contains(localPosition);
 		}
 
+		public bool IsPositionOnBoard(Vector2Int move)
+		{
+			return 0 <= move.x && move.x < columns && 
+			       0 <= move.y && move.y < rows;
+		}
+
 		private void OnDrawGizmosSelected()
 		{
 			using (new Handles.DrawingScope())
