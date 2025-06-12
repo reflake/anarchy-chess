@@ -87,7 +87,7 @@ namespace Entity
 
 		private void OnDrawGizmosSelected()
 		{
-			using (new Handles.DrawingScope())
+			using (new Handles.DrawingScope(transform.localToWorldMatrix))
 			{
 				Handles.color = Color.blue;
 				Handles.DrawWireCube(Vector3.zero, new Vector3(width, 0.5f, length));
