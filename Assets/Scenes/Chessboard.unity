@@ -537,7 +537,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1843463736}
+  - component: {fileID: 1843463738}
   - component: {fileID: 1843463735}
+  - component: {fileID: 1843463737}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -573,6 +575,31 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1843463737
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1843463734}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72ad9916e9734ab69993c70e7c9269b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  markerPrefab: {fileID: 2415377108180145605, guid: c9388daf62b227047a57d9a707684fe8, type: 3}
+--- !u!114 &1843463738
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1843463734}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b760b5026b91443397937ca6bf818d8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1900279291
 GameObject:
   m_ObjectHideFlags: 0

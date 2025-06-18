@@ -25,14 +25,14 @@ namespace Player
 
 				if (!Physics.Raycast(mouseRay, out RaycastHit hit))
 				{
-					UnselectCurrentPiece();
+					UnselectCurrentPiece(true);
 					return;
 				}
 				
 				var piece = hit.transform.gameObject.GetComponent<Piece>();
 				if (piece == null)
 				{
-					UnselectCurrentPiece();
+					UnselectCurrentPiece(true);
 					return;
 				}
 				
@@ -44,10 +44,12 @@ namespace Player
 		{
 			if (piece != _selectedPiece && _selectedPiece != null)
 			{
-				UnselectCurrentPiece();
+				UnselectCurrentPiece(false);
 			}
 			
 			_selectedPiece = piece;
+			
+			SendMessage(nameof(Player.OnSelectPiece), piece);
 			
 			var pieceRenderer = _selectedPiece.GetComponent<Renderer>();
 			if (pieceRenderer == null)
@@ -61,10 +63,15 @@ namespace Player
 			};
 		}
 
-		private void UnselectCurrentPiece()
+		private void UnselectCurrentPiece(bool fireMessage)
 		{
 			if (_selectedPiece == null)
 				return;
+
+			if (fireMessage)
+			{
+				SendMessage(nameof(Player.OnUnselectPiece), _selectedPiece);
+			}
 
 			var pieceRenderer = _selectedPiece.GetComponent<Renderer>();
 			if (pieceRenderer)

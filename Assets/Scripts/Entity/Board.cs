@@ -33,6 +33,15 @@ namespace Entity
 
 		public void Put(Piece piece, Vector2Int localPosition)
 		{
+			var worldPosition = LocalToWorld(localPosition);
+
+			piece.transform.position = worldPosition;
+
+			piece.SetBoard(this);
+		}
+
+		public Vector3 LocalToWorld(Vector2Int localPosition)
+		{
 			var worldPosition = new Vector3(localPosition.x, 0, localPosition.y);
 			
 			// Normalize coordinates
@@ -44,12 +53,11 @@ namespace Entity
 			worldPosition.x *= width;
 			worldPosition.z *= length;
 			worldPosition = transform.TransformPoint(worldPosition);
-
+			
 			// Put the piece in the center of a cell
 			Vector3 offset = new Vector3(width / columns / 2, 0, length / rows / 2);
-			piece.transform.position = worldPosition + offset;
-
-			piece.SetBoard(this);
+			
+			return worldPosition + offset;
 		}
 
 		public void PlacePieces(BoardState boardState)

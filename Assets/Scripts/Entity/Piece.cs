@@ -50,9 +50,13 @@ namespace Entity
 			return _board.GetPositionOnBoard(this);
 		}
 
-		public void GetPossibleMoves()
+		public IEnumerable<Vector2Int> GetPossibleMoves()
 		{
+			MoveBuilder builder = new(this, _board);
+
+			builder.Add(Vector2Int.up, Vector2Int.left, Vector2Int.right);
 			
+			return builder.GetValidatedMoves();
 		}
 	}
 }
