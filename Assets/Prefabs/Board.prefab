@@ -47,6 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae5548d83f51494688c5ef1671ca4d3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentTurnPlayerColor: 1
   width: 12
   length: 12
   rows: 8

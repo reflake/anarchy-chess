@@ -31,9 +31,11 @@ namespace Entity
 		[SerializeField] private PieceColor color;
 		[SerializeField, EnumToggleButtons] 
 		private MovePattern pattern;
-		
+
+		public PieceColor Color => color;
 		public Board Board => _board;
-		
+		public bool CanBeMoved => color == _board.CurrentTurnPlayerColor;
+
 		private Board _board = null;
 
 		public void SetBoard(Board board)
@@ -66,6 +68,8 @@ namespace Entity
 				return;
 			
 			transform.position = _board.LocalToWorld(point);
+
+			_board.NextPlayerTurn();
 		}
 	}
 }

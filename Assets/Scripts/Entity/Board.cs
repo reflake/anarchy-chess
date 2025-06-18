@@ -6,10 +6,12 @@ namespace Entity
 {
 	public class Board : MonoBehaviour
 	{
+		[SerializeField] private PieceColor currentTurnPlayerColor;
 		[SerializeField] private float width, length;
 		[SerializeField] private int rows, columns;
 		
 		public Bounds Bounds => new Bounds(Vector3.zero, new Vector3(width, 1f, length));
+		public PieceColor CurrentTurnPlayerColor => currentTurnPlayerColor;
 		public int Rows => rows;
 		public int Columns => columns;
 
@@ -96,6 +98,19 @@ namespace Entity
 		{
 			return 0 <= move.x && move.x < columns && 
 			       0 <= move.y && move.y < rows;
+		}
+
+		public void NextPlayerTurn()
+		{
+			switch (currentTurnPlayerColor)
+			{
+				case PieceColor.White:
+					currentTurnPlayerColor = PieceColor.Black;
+					break;
+				case PieceColor.Black:
+					currentTurnPlayerColor = PieceColor.White;
+					break;
+			}
 		}
 
 		private void OnDrawGizmosSelected()

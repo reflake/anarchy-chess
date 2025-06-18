@@ -12,7 +12,7 @@ namespace Entity
 			if (boardState == null)
 				return;
 			
-			var board = GameObject.FindObjectOfType<Board>();
+			var board = FindObjectOfType<Board>();
 
 			if (board == null)
 				return;
@@ -22,6 +22,9 @@ namespace Entity
 
 		public bool IsMoveValid(Piece piece, Vector2Int move, Board board)
 		{
+			if (piece.Color != board.CurrentTurnPlayerColor)
+				return false;
+			
 			if (!board.IsPositionOnBoard(move))
 				return false;
 

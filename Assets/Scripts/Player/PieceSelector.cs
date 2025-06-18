@@ -10,7 +10,7 @@ namespace Player
 		
 		private Piece _selectedPiece;
 		private Material _selectedPieceMaterial;
-		
+
 		public void OnRaycastHit(RaycastInfo info)
 		{
 			if (info.Hit == false || info.PieceHit == null)
@@ -24,6 +24,12 @@ namespace Player
 
 		private void SelectPiece(Piece piece)
 		{
+			if (!piece.CanBeMoved)
+			{
+				UnselectCurrentPiece(true);
+				return;
+			}
+			
 			if (_selectedPiece == piece)
 			{
 				return;
