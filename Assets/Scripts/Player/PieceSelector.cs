@@ -1,4 +1,5 @@
 using Entity;
+using Player.Data;
 using UnityEngine;
 
 namespace Player
@@ -9,39 +10,25 @@ namespace Player
 		
 		private Piece _selectedPiece;
 		private Material _selectedPieceMaterial;
-		private Camera _mainCamera;
-
-		private void Awake()
-		{
-			_mainCamera = Camera.main;
-		}
 		
-		private void Update()
+		public void OnRaycastHit(RaycastInfo info)
 		{
-			if (Input.GetButtonDown("Fire1"))
+			if (info.Hit == false)
 			{
-				var screenMousePos = Input.mousePosition;
-				var mouseRay = _mainCamera.ScreenPointToRay(screenMousePos);
-
-				if (!Physics.Raycast(mouseRay, out RaycastHit hit))
-				{
-					UnselectCurrentPiece(true);
-					return;
-				}
-				
-				var piece = hit.transform.gameObject.GetComponent<Piece>();
-				if (piece == null)
-				{
-					UnselectCurrentPiece(true);
-					return;
-				}
-				
-				SelectPiece(piece);
+				UnselectCurrentPiece(true);
+				return;
 			}
+			
+			SelectPiece(info.PieceHit);
 		}
 
 		private void SelectPiece(Piece piece)
 		{
+			if (_selectedPiece == piece)
+			{
+				return;
+			}
+			
 			if (piece != _selectedPiece && _selectedPiece != null)
 			{
 				UnselectCurrentPiece(false);
