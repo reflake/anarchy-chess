@@ -67,7 +67,7 @@ namespace Entity
 			return worldPosition + offset;
 		}
 
-		public void PlacePieces(BoardState boardState)
+		public void PlacePieces(BoardConfiguration boardConfiguration)
 		{
 			// Remove pieces which previously occupied board
 			var previousPieces = GameObject.FindObjectsOfType<Piece>();
@@ -80,7 +80,7 @@ namespace Entity
 				}
 			}
 			
-			foreach (var piecePosition in boardState.PiecePositions)
+			foreach (var piecePosition in boardConfiguration.PiecePositions)
 			{
 				Piece piece = Instantiate(piecePosition.Prefab);
 				Put(piece, piecePosition.LocalPosition);

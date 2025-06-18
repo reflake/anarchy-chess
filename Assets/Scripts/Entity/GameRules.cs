@@ -5,11 +5,11 @@ namespace Entity
 {
 	public class GameRules : MonoBehaviour
 	{
-		[SerializeField] private BoardState boardState;
+		[SerializeField] private BoardConfiguration boardConfiguration;
 
 		private void Awake()
 		{
-			if (boardState == null)
+			if (boardConfiguration == null)
 				return;
 			
 			var board = FindObjectOfType<Board>();
@@ -17,7 +17,7 @@ namespace Entity
 			if (board == null)
 				return;
 			
-			board.PlacePieces(boardState);
+			board.PlacePieces(boardConfiguration);
 		}
 
 		public bool IsMoveValid(Piece piece, Vector2Int move, Board board)

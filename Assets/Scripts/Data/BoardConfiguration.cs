@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Data
 {
 	[CreateAssetMenu(fileName = "Board State", menuName = "Data/Chess/Board State", order = 0)]
-	public class BoardState : ScriptableObject
+	public class BoardConfiguration : ScriptableObject
 	{
 		[SerializeField] private List<PiecePosition> piecePositions = new();
 		

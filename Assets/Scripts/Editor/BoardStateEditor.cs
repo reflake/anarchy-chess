@@ -5,14 +5,14 @@ using UnityEngine;
 
 namespace Editor
 {
-	[CustomEditor(typeof(BoardState))]
+	[CustomEditor(typeof(BoardConfiguration))]
 	public class BoardStateEditor : UnityEditor.Editor
 	{
 		public override void OnInspectorGUI()
 		{
 			base.OnInspectorGUI();
 			
-			var boardState = (BoardState)target;
+			var boardState = (BoardConfiguration)target;
 
 			if (boardState == null)
 				return;
@@ -28,9 +28,9 @@ namespace Editor
 			}
 		}
 
-		private void ReadBoard(BoardState boardState)
+		private void ReadBoard(BoardConfiguration boardConfiguration)
 		{
-			boardState.Clear();
+			boardConfiguration.Clear();
 				
 			var board = GameObject.FindFirstObjectByType<Board>();
 
@@ -53,11 +53,11 @@ namespace Editor
 					continue;
 					
 				var positionOnBoard = board.GetPositionOnBoard(piece);
-				boardState.PlacePiece(positionOnBoard, prefab);
+				boardConfiguration.PlacePiece(positionOnBoard, prefab);
 			}
 		}
 
-		private void PlacePieces(BoardState boardState)
+		private void PlacePieces(BoardConfiguration boardConfiguration)
 		{
 			var board = GameObject.FindFirstObjectByType<Board>();
 
@@ -77,7 +77,7 @@ namespace Editor
 				}
 			}
 
-			foreach (var position in boardState.PiecePositions)
+			foreach (var position in boardConfiguration.PiecePositions)
 			{
 				var piece = PrefabUtility.InstantiatePrefab(position.Prefab) as Piece;
 				

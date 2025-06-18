@@ -406,7 +406,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2156708b58a54a10b5c399870df8926f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boardState: {fileID: 11400000, guid: c91825d4b5e70fd41a0771b58c62c1aa, type: 2}
+  boardConfiguration: {fileID: 11400000, guid: c91825d4b5e70fd41a0771b58c62c1aa, type: 2}
 --- !u!4 &654823650
 Transform:
   m_ObjectHideFlags: 0
