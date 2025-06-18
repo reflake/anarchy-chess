@@ -15,7 +15,12 @@ namespace Entity
 
 		public Vector2Int GetPositionOnBoard(Piece piece)
 		{
-			var localPosition = transform.InverseTransformPoint(piece.transform.position);
+			return WorldToLocal(piece.transform.position);
+		}
+
+		public Vector2Int WorldToLocal(Vector3 point)
+		{
+			var localPosition = transform.InverseTransformPoint(point);
 			
 			// Normalize coordinates of the piece
 			localPosition += new Vector3(width / 2, 0, length / 2);

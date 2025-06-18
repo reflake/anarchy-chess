@@ -13,7 +13,7 @@ namespace Player
 		
 		public void OnRaycastHit(RaycastInfo info)
 		{
-			if (info.Hit == false)
+			if (info.Hit == false || info.PieceHit == null)
 			{
 				UnselectCurrentPiece(true);
 				return;

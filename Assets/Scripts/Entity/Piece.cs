@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TriInspector;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -57,6 +58,14 @@ namespace Entity
 			builder.Add(Vector2Int.up, Vector2Int.left, Vector2Int.right);
 			
 			return builder.GetValidatedMoves();
+		}
+
+		public void MoveTo(Vector2Int point)
+		{
+			if (!GetPossibleMoves().Contains(point))
+				return;
+			
+			transform.position = _board.LocalToWorld(point);
 		}
 	}
 }

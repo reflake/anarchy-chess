@@ -1,50 +1,39 @@
 using Entity;
 using Player.Data;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace Player
 {
 	public class Player : MonoBehaviour
 	{
-		private Camera _mainCamera;
-
-		private void Awake()
-		{
-			_mainCamera = Camera.main;
-		}
+		private Piece _selectedPiece;
 		
 		public void OnSelectPiece(Piece piece)
 		{
 			SendMessage(nameof(MoveVisualizer.ShowMovesOfPiece), piece);
+			
+			_selectedPiece = piece;
 		}
 
 		public void OnUnselectPiece(Piece _)
 		{
 			SendMessage(nameof(MoveVisualizer.ClearMarkers));
-		}
-		
-		private void Update()
-		{
-			if (Input.GetButtonDown("Fire1"))
-			{
-				var screenMousePos = Input.mousePosition;
-				var mouseRay = _mainCamera.ScreenPointToRay(screenMousePos);
 
-				if (!Physics.Raycast(mouseRay, out RaycastHit hit))
-				{
-					SendMessage("OnRaycastHit", new RaycastInfo());
-					return;
-				}
-				
-				var piece = hit.transform.gameObject.GetComponent<Piece>();
-				if (piece == null)
-				{
-					SendMessage("OnRaycastHit", new RaycastInfo());
-					return;
-				}
-				
-				SendMessage("OnRaycastHit", new RaycastInfo(piece));
+			_selectedPiece = null;
+		}
+
+		public void OnRaycastHit(RaycastInfo hit)
+		{
+			if (!hit.Hit || !hit.BoardHit)
+				return;
+
+			if (_selectedPiece)
+			{
+				_selectedPiece.MoveTo(hit.BoardPoint);
+			}
+			else
+			{
+				Debug.LogWarning("Cannot make move, piece is not selected");
 			}
 		}
 	}
