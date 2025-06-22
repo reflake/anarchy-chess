@@ -24,12 +24,19 @@ namespace Player
 
 		public void OnRaycastHit(RaycastInfo hit)
 		{
-			if (!hit.Hit || !hit.BoardHit)
+			if (!hit.Hit)
 				return;
 
 			if (_selectedPiece)
 			{
-				_selectedPiece.MoveTo(hit.BoardPoint);
+				if (hit.BoardHit)
+					_selectedPiece.MoveTo(hit.BoardPoint);
+				
+				else if (hit.PieceHit)
+					_selectedPiece.MoveTo(hit.PieceHit.GetPositionOnBoard());
+					
+				SendMessage(nameof(MoveVisualizer.ClearMarkers));
+				SendMessage(nameof(PieceSelector.UnselectCurrentPiece), true);
 			}
 			else
 			{

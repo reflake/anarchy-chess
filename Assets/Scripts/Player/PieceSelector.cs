@@ -24,6 +24,9 @@ namespace Player
 
 		private void SelectPiece(Piece piece)
 		{
+			if (!piece || piece.Captured)
+				return;
+			
 			if (!piece.CanBeMoved)
 			{
 				UnselectCurrentPiece(true);
@@ -56,7 +59,7 @@ namespace Player
 			};
 		}
 
-		private void UnselectCurrentPiece(bool fireMessage)
+		public void UnselectCurrentPiece(bool fireMessage)
 		{
 			if (_selectedPiece == null)
 				return;

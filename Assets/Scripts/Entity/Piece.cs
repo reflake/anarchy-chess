@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using TriInspector;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -35,7 +36,8 @@ namespace Entity
 		public PieceColor Color => color;
 		public Board Board => _board;
 		public bool CanBeMoved => color == _board.CurrentTurnPlayerColor;
-
+		public bool Captured { get; private set; } = false;
+		
 		private Board _board = null;
 		private bool _onInitialPosition = true;
 		private GameRules _gameRules;
@@ -114,18 +116,39 @@ namespace Entity
 				.Where(x => _gameRules.IsMoveValid(this, x, _board));
 		}
 
-		public void MoveTo(Vector2Int point)
+		public void MoveTo(Vector2Int targetPoint)
 		{
-			if (!GetPossibleMoves().Contains(point))
+			if (!GetPossibleMoves().Contains(targetPoint))
 				return;
+
+			// Try to capture piece occupying target point
+			Piece pieceOccupyingCell = _board.GetCellPiece(targetPoint);
+			if (pieceOccupyingCell != null)
+			{
+				if (CanCapture(pieceOccupyingCell))
+				{
+					CapturePiece(pieceOccupyingCell);
+				}
+				else
+				{
+					return;
+				}
+			}
 
 			_onInitialPosition = false;
 			
-			transform.position = _board.LocalToWorld(point);
+			transform.position = _board.LocalToWorld(targetPoint);
 
 			_board.NextPlayerTurn();
 		}
-		
+
+		private void CapturePiece(Piece other)
+		{
+			other.Captured = true;
+			
+			Destroy(other.gameObject);
+		}
+
 		public bool CanCapture(Piece piece) => piece != null && color != piece.color;
 	}
 }
