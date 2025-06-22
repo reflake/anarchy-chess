@@ -15,6 +15,8 @@ namespace Entity
 		public int Rows => rows;
 		public int Columns => columns;
 
+		private Piece[,] _cachedPieces = null;
+
 		public Vector2Int GetPositionOnBoard(Piece piece)
 		{
 			return WorldToLocal(piece.transform.position);
@@ -113,6 +115,32 @@ namespace Entity
 			}
 		}
 
+		public Piece GetCellPiece(Vector2Int boardPos)
+		{
+			if (_cachedPieces == null)
+			{
+				_cachedPieces = new Piece[rows, columns];
+
+				foreach (var piece in FindObjectsByType<Piece>(FindObjectsSortMode.None))
+				{
+					if (piece.Board != this)
+						continue;
+
+					if (!IsPieceOnBoard(piece))
+						continue;
+					
+					var localPos = WorldToLocal(piece.transform.position);
+					
+					_cachedPieces[localPos.x, localPos.y] = piece;
+				}
+			}
+
+			if (!IsPositionOnBoard(boardPos))
+				return null;
+			
+			return _cachedPieces[boardPos.x, boardPos.y];
+		}
+
 		private void OnDrawGizmosSelected()
 		{
 			using (new Handles.DrawingScope(transform.localToWorldMatrix))
@@ -120,6 +148,11 @@ namespace Entity
 				Handles.color = Color.blue;
 				Handles.DrawWireCube(Vector3.zero, new Vector3(width, 0.5f, length));
 			}
+		}
+
+		private void LateUpdate()
+		{
+			_cachedPieces = null;
 		}
 	}
 }
