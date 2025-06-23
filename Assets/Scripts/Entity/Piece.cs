@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using TriInspector;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -29,17 +28,18 @@ namespace Entity
 	
 	public class Piece : MonoBehaviour
 	{
+		[SerializeField] private bool isKing = false;
 		[SerializeField] private PieceColor color;
-		[SerializeField, EnumToggleButtons] 
-		private MovePattern pattern;
-
-		public PieceColor Color => color;
-		public Board Board => _board;
-		public bool CanBeMoved => color == _board.CurrentTurnPlayerColor;
-		public bool Captured { get; private set; } = false;
+		[SerializeField, EnumToggleButtons] private MovePattern pattern;
+		[SerializeField, HideInEditMode] private Board board = null;
+		[SerializeField, HideInEditMode] private bool onInitialPosition = true;
 		
-		private Board _board = null;
-		private bool _onInitialPosition = true;
+		public bool IsKing => isKing;
+		public PieceColor Color => color;
+		public Board Board => board;
+		public bool CanBeMoved => color == board.CurrentTurnPlayerColor;
+		public bool Captured { get; private set; } = false;
+
 		private GameRules _gameRules;
 
 		private void Awake()
@@ -49,22 +49,22 @@ namespace Entity
 
 		public void SetBoard(Board board)
 		{
-			_board = board;
+			this.board = board;
 		}
 
 		public Vector2Int GetPositionOnBoard()
 		{
-			if (_board == null)
+			if (board == null)
 			{
 				throw new NullReferenceException("Piece is not bound to any Board");
 			}
 			
-			return _board.GetPositionOnBoard(this);
+			return board.GetPositionOnBoard(this);
 		}
 
-		public IEnumerable<Vector2Int> GetPossibleMoves()
+		public IEnumerable<Vector2Int> GetPossibleMoves(bool validate)
 		{
-			MoveBuilder builder = new(this, _board);
+			MoveBuilder builder = new(this, board);
 
 			if (pattern.HasFlag(MovePattern.Pawn))
 			{
@@ -73,7 +73,7 @@ namespace Entity
 				builder.Options(MoveOption.CannotCapture)
 						.AddStep(moveDirection, false);
 
-				if (_onInitialPosition)
+				if (onInitialPosition)
 					builder.AddStep(moveDirection * 2);
 
 				builder.Options(MoveOption.MustCapture)
@@ -112,20 +112,22 @@ namespace Entity
 					Vector2Int.down + Vector2Int.right);
 			}
 			
-			return builder.GetValidatedMoves()
-				.Where(x => _gameRules.IsMoveValid(this, x, _board));
+			if (validate)
+				return builder.GetMoves()
+								.Where(x => _gameRules.IsMoveValid(this, x, board));
+
+			return builder.GetMoves();
 		}
+
+		public bool IsPieceEnemy(Piece piece) => piece != null && color != piece.color;
 
 		public void MoveTo(Vector2Int targetPoint)
 		{
-			if (!GetPossibleMoves().Contains(targetPoint))
-				return;
-
 			// Try to capture piece occupying target point
-			Piece pieceOccupyingCell = _board.GetCellPiece(targetPoint);
+			Piece pieceOccupyingCell = board.GetCellPiece(targetPoint);
 			if (pieceOccupyingCell != null)
 			{
-				if (CanCapture(pieceOccupyingCell))
+				if (IsPieceEnemy(pieceOccupyingCell))
 				{
 					CapturePiece(pieceOccupyingCell);
 				}
@@ -135,20 +137,29 @@ namespace Entity
 				}
 			}
 
-			_onInitialPosition = false;
+			onInitialPosition = false;
 			
-			transform.position = _board.LocalToWorld(targetPoint);
+			transform.position = board.LocalToWorld(targetPoint);
 
-			_board.NextPlayerTurn();
+			board.InvalidateGrid();
+			board.NextPlayerTurn();
+		}
+
+		public bool CanCapture(Piece piece)
+		{
+			var moves = GetPossibleMoves(false);
+
+			if (!IsPieceEnemy(piece))
+				return false;
+			
+			var piecePosition = piece.GetPositionOnBoard();
+			return moves.Contains(piecePosition);
 		}
 
 		private void CapturePiece(Piece other)
 		{
 			other.Captured = true;
-			
-			Destroy(other.gameObject);
+			other.gameObject.SetActive(false);
 		}
-
-		public bool CanCapture(Piece piece) => piece != null && color != piece.color;
 	}
 }

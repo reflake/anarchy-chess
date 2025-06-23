@@ -12,7 +12,7 @@ namespace Player
 
 		public void ShowMovesOfPiece(Piece piece)
 		{
-			var possibleMoves = piece.GetPossibleMoves();
+			var possibleMoves = piece.GetPossibleMoves(true);
 			var board = piece.Board;
 
 			ClearMarkers();

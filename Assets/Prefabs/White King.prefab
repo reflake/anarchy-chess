@@ -47,8 +47,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b3df4bbef47420a8a6ffeb9e2d8d880, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isKing: 1
   color: 1
   pattern: 28
+  board: {fileID: 0}
 --- !u!33 &3379130
 MeshFilter:
   m_ObjectHideFlags: 0

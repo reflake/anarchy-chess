@@ -67,7 +67,7 @@ namespace Utility
 				Piece otherPiece = _board.GetCellPiece(newPosition);
 				bool outOfBound = !_board.IsPositionOnBoard(newPosition);
 				bool isCellEmpty = !otherPiece;
-				bool captures = _options.HasFlag(MoveOption.CanCapture) && _piece.CanCapture(otherPiece);
+				bool captures = _options.HasFlag(MoveOption.CanCapture) && _piece.IsPieceEnemy(otherPiece);
 				bool mustCapture = _options.HasFlag(MoveOption.MustCapture);
 
 				if (outOfBound)
@@ -87,7 +87,7 @@ namespace Utility
 			return this;
 		}
 
-		public IEnumerable<Vector2Int> GetValidatedMoves()
+		public IEnumerable<Vector2Int> GetMoves()
 		{
 			return _probableMoves;
 		}

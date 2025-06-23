@@ -1,3 +1,4 @@
+using System.Linq;
 using Data;
 using UnityEditor;
 using UnityEngine;
@@ -44,6 +45,7 @@ namespace Entity
 		{
 			var worldPosition = LocalToWorld(localPosition);
 
+			piece.transform.parent = transform;
 			piece.transform.position = worldPosition;
 
 			piece.SetBoard(this);
@@ -72,7 +74,7 @@ namespace Entity
 		public void PlacePieces(BoardConfiguration boardConfiguration)
 		{
 			// Remove pieces which previously occupied board
-			var previousPieces = GameObject.FindObjectsOfType<Piece>();
+			var previousPieces = FindObjectsOfType<Piece>(false);
 
 			foreach (var piece in previousPieces)
 			{
@@ -121,7 +123,8 @@ namespace Entity
 			{
 				_cachedPieces = new Piece[rows, columns];
 
-				foreach (var piece in FindObjectsByType<Piece>(FindObjectsSortMode.None))
+				var pieces = GetComponentsInChildren<Piece>(false);
+				foreach (var piece in pieces)
 				{
 					if (piece.Board != this)
 						continue;
@@ -139,6 +142,27 @@ namespace Entity
 				return null;
 			
 			return _cachedPieces[boardPos.x, boardPos.y];
+		}
+
+		public bool IsCheckmate(PieceColor colorToCheck)
+		{
+			var pieces = GetComponentsInChildren<Piece>(false);
+			var king = pieces.Single(x => x.IsKing && x.Color == colorToCheck);
+			foreach (var opponentPiece in pieces)
+			{
+				if (opponentPiece.Color == colorToCheck)
+					continue;
+
+				if (opponentPiece.CanCapture(king))
+					return true;
+			}
+
+			return false;
+		}
+
+		public void InvalidateGrid()
+		{
+			_cachedPieces = null;
 		}
 
 		private void OnDrawGizmosSelected()

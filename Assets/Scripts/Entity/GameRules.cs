@@ -1,5 +1,6 @@
 using Data;
 using UnityEngine;
+using Utility;
 
 namespace Entity
 {
@@ -28,8 +29,12 @@ namespace Entity
 			if (!board.IsPositionOnBoard(move))
 				return false;
 
-			//if (!piece.CanMoveToPosition(move))
-			//	return false;
+			// Check for invalid move that threatens king
+			using var simulation = new Simulation(board);
+			simulation.PieceMoveTo(piece, move);
+
+			if (simulation.IsCheckmate(piece.Color))
+				return false;
 
 			return true;
 		}

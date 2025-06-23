@@ -1,3 +1,4 @@
+using System.Linq;
 using Entity;
 using Player.Data;
 using UnityEngine;
@@ -29,11 +30,16 @@ namespace Player
 
 			if (_selectedPiece)
 			{
-				if (hit.BoardHit)
-					_selectedPiece.MoveTo(hit.BoardPoint);
+				var possibleMoves = _selectedPiece.GetPossibleMoves(true).ToList();
 				
-				else if (hit.PieceHit)
+				if (hit.BoardHit && possibleMoves.Contains(hit.BoardPoint))
+				{
+					_selectedPiece.MoveTo(hit.BoardPoint);
+				}
+				else if (hit.PieceHit && possibleMoves.Contains(hit.PieceHit.GetPositionOnBoard()))
+				{
 					_selectedPiece.MoveTo(hit.PieceHit.GetPositionOnBoard());
+				}
 					
 				SendMessage(nameof(MoveVisualizer.ClearMarkers));
 				SendMessage(nameof(PieceSelector.UnselectCurrentPiece), true);
