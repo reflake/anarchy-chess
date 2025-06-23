@@ -34,11 +34,11 @@ namespace Player
 				
 				if (hit.BoardHit && possibleMoves.Contains(hit.BoardPoint))
 				{
-					_selectedPiece.MoveTo(hit.BoardPoint);
+					_selectedPiece.MoveTo(hit.BoardPoint, true);
 				}
 				else if (hit.PieceHit && possibleMoves.Contains(hit.PieceHit.GetPositionOnBoard()))
 				{
-					_selectedPiece.MoveTo(hit.PieceHit.GetPositionOnBoard());
+					_selectedPiece.MoveTo(hit.PieceHit.GetPositionOnBoard(), true);
 				}
 					
 				SendMessage(nameof(MoveVisualizer.ClearMarkers));

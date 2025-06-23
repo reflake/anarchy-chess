@@ -121,7 +121,7 @@ namespace Entity
 
 		public bool IsPieceEnemy(Piece piece) => piece != null && color != piece.color;
 
-		public void MoveTo(Vector2Int targetPoint)
+		public void MoveTo(Vector2Int targetPoint, bool triggerEvent)
 		{
 			// Try to capture piece occupying target point
 			Piece pieceOccupyingCell = board.GetCellPiece(targetPoint);
@@ -143,6 +143,11 @@ namespace Entity
 
 			board.InvalidateGrid();
 			board.NextPlayerTurn();
+
+			if (triggerEvent)
+			{
+				_gameRules.HandleTurnEvent(board);
+			}
 		}
 
 		public bool CanCapture(Piece piece)

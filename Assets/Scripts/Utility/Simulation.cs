@@ -27,7 +27,7 @@ namespace Utility
 		{
 			if (_pieceCopiesMap.ContainsKey(piece))
 			{
-				_pieceCopiesMap[piece].MoveTo(move);
+				_pieceCopiesMap[piece].MoveTo(move, false);
 				return;
 			}
 			
@@ -37,7 +37,7 @@ namespace Utility
 			
 			_pieceCopiesMap.Add(piece, pieceCopy);
 			
-			pieceCopy.MoveTo(move);
+			pieceCopy.MoveTo(move, false);
 		}
 
 		public bool IsCheckmate(PieceColor color)

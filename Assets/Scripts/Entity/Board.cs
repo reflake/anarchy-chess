@@ -160,6 +160,21 @@ namespace Entity
 			return false;
 		}
 
+		public bool CanCurrentPlayerMove()
+		{
+			var pieces = GetComponentsInChildren<Piece>(false);
+			foreach (var piece in pieces)
+			{
+				if (piece.Color != currentTurnPlayerColor)
+					continue;
+
+				if (piece.GetPossibleMoves(true).Any())
+					return true;
+			}
+			
+			return false;
+		}
+
 		public void InvalidateGrid()
 		{
 			_cachedPieces = null;
