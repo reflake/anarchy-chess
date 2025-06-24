@@ -20,7 +20,7 @@ namespace Utility
 		private readonly Board _board;
 		private readonly Vector2Int _myPosition;
 		
-		private List<Vector2Int> _probableMoves = new();
+		private List<Move> _probableMoves = new();
 		private bool _loop = false;
 		private MoveOption _options = MoveOption.CannotCapture;
 
@@ -28,7 +28,7 @@ namespace Utility
 		{
 			_piece = piece;
 			_board = board;
-			_myPosition = piece.GetPositionOnBoard();
+			_myPosition = piece.Position;
 		}
 
 		public MoveBuilder Loop(bool loop)
@@ -76,7 +76,10 @@ namespace Utility
 				if (!mustCapture && (isCellEmpty || captures) || 
 				    mustCapture && captures)
 				{
-					_probableMoves.Add(newPosition);
+					if (isCellEmpty)
+						_probableMoves.Add(new Step(_piece, newPosition));
+					else
+						_probableMoves.Add(new Capture(_piece, otherPiece, newPosition));
 				}
 
 				// Taking next steps until hit an occupied cell
@@ -87,7 +90,27 @@ namespace Utility
 			return this;
 		}
 
-		public IEnumerable<Vector2Int> GetMoves()
+		public MoveBuilder AddCastling(Piece king, Piece rook)
+		{
+			var kingMoveDirection = rook.Position - king.Position;
+			kingMoveDirection.x /= Mathf.Abs(kingMoveDirection.x);
+
+			// Check if anything is in the way
+			for (var i = king.Position + kingMoveDirection; i != rook.Position; i += kingMoveDirection)
+			{
+				if (!_board.IsPositionOnBoard(i))
+					return this;
+				
+				if (_board.GetCellPiece(i))
+					return this;
+			}
+			
+			_probableMoves.Add(new Castling(king, rook, -kingMoveDirection, king.Position + kingMoveDirection * 2));
+			
+			return this;
+		}
+
+		public IReadOnlyList<Move> GetMoves()
 		{
 			return _probableMoves;
 		}

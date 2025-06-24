@@ -8,7 +8,6 @@ namespace Utility
 	public class Simulation : IDisposable
 	{
 		private Board _boardCopy = null;
-		private Dictionary<Piece, Piece> _pieceCopiesMap = new();
 
 		public Simulation(Board board)
 		{
@@ -23,21 +22,10 @@ namespace Utility
 			GameObject.Destroy(_boardCopy.gameObject);
 		}
 
-		public void PieceMoveTo(Piece piece, Vector2Int move)
+		public void MakeMove(Move move)
 		{
-			if (_pieceCopiesMap.ContainsKey(piece))
-			{
-				_pieceCopiesMap[piece].MoveTo(move, false);
-				return;
-			}
-			
-			// Link original piece with its copy
-			var piecePosition = piece.GetPositionOnBoard();
-			var pieceCopy = _boardCopy.GetCellPiece(piecePosition);
-			
-			_pieceCopiesMap.Add(piece, pieceCopy);
-			
-			pieceCopy.MoveTo(move, false);
+			// Perform move on copied board
+			move.Perform(_boardCopy);
 		}
 
 		public bool IsCheckmate(PieceColor color)

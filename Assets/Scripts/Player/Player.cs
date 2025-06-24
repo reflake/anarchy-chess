@@ -32,13 +32,15 @@ namespace Player
 			{
 				var possibleMoves = _selectedPiece.GetPossibleMoves(true).ToList();
 				
-				if (hit.BoardHit && possibleMoves.Contains(hit.BoardPoint))
+				if (hit.BoardHit)
 				{
-					_selectedPiece.MoveTo(hit.BoardPoint, true);
+					var move = possibleMoves.FirstOrDefault(move => move.Position == hit.BoardPoint);
+					move?.Perform();
 				}
-				else if (hit.PieceHit && possibleMoves.Contains(hit.PieceHit.GetPositionOnBoard()))
+				else if (hit.PieceHit && possibleMoves.Any(move => move.Position == hit.PieceHit.Position))
 				{
-					_selectedPiece.MoveTo(hit.PieceHit.GetPositionOnBoard(), true);
+					var move = possibleMoves.FirstOrDefault(move => move.Position == hit.PieceHit.Position);
+					move?.Perform();
 				}
 					
 				SendMessage(nameof(MoveVisualizer.ClearMarkers));

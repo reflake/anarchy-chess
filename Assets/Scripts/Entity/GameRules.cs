@@ -35,17 +35,14 @@ namespace Entity
 			board.PlacePieces(boardConfiguration);
 		}
 
-		public bool IsMoveValid(Piece piece, Vector2Int move, Board board)
+		public bool IsMoveValid(Piece piece, Move move, Board board)
 		{
 			if (piece.Color != board.CurrentTurnPlayerColor)
-				return false;
-			
-			if (!board.IsPositionOnBoard(move))
 				return false;
 
 			// Check for invalid move that threatens king
 			using var simulation = new Simulation(board);
-			simulation.PieceMoveTo(piece, move);
+			simulation.MakeMove(move);
 
 			if (simulation.IsCheckmate(piece.Color))
 				return false;

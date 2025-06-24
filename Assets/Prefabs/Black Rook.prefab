@@ -47,8 +47,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b3df4bbef47420a8a6ffeb9e2d8d880, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isKing: 0
+  isRook: 1
   color: 2
   pattern: 4
+  board: {fileID: 0}
+  onInitialPosition: 1
 --- !u!33 &3387380
 MeshFilter:
   m_ObjectHideFlags: 0

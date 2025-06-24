@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Data;
 using UnityEditor;
@@ -15,6 +17,7 @@ namespace Entity
 		public PieceColor CurrentTurnPlayerColor => currentTurnPlayerColor;
 		public int Rows => rows;
 		public int Columns => columns;
+		public IReadOnlyList<Piece> Pieces => GetComponentsInChildren<Piece>(false);
 
 		private Piece[,] _cachedPieces = null;
 
@@ -104,7 +107,7 @@ namespace Entity
 			       0 <= move.y && move.y < rows;
 		}
 
-		public void NextPlayerTurn()
+		public void NextPlayerTurn(bool triggerEvent)
 		{
 			switch (currentTurnPlayerColor)
 			{
@@ -115,6 +118,9 @@ namespace Entity
 					currentTurnPlayerColor = PieceColor.White;
 					break;
 			}
+			
+			if (triggerEvent)
+				FindFirstObjectByType<GameRules>().HandleTurnEvent(this);
 		}
 
 		public Piece GetCellPiece(Vector2Int boardPos)

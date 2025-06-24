@@ -29,6 +29,7 @@ namespace Entity
 	public class Piece : MonoBehaviour
 	{
 		[SerializeField] private bool isKing = false;
+		[SerializeField] private bool isRook = false;
 		[SerializeField] private PieceColor color;
 		[SerializeField, EnumToggleButtons] private MovePattern pattern;
 		[SerializeField, HideInEditMode] private Board board = null;
@@ -52,17 +53,20 @@ namespace Entity
 			this.board = board;
 		}
 
-		public Vector2Int GetPositionOnBoard()
+		public Vector2Int Position
 		{
-			if (board == null)
+			get
 			{
-				throw new NullReferenceException("Piece is not bound to any Board");
+				if (board == null)
+				{
+					throw new NullReferenceException("Piece is not bound to any Board");
+				}
+
+				return board.GetPositionOnBoard(this);
 			}
-			
-			return board.GetPositionOnBoard(this);
 		}
 
-		public IEnumerable<Vector2Int> GetPossibleMoves(bool validate)
+		public IReadOnlyList<Move> GetPossibleMoves(bool validate)
 		{
 			MoveBuilder builder = new(this, board);
 
@@ -111,17 +115,29 @@ namespace Entity
 					Vector2Int.down + Vector2Int.left,
 					Vector2Int.down + Vector2Int.right);
 			}
+
+			if (isKing && onInitialPosition)
+			{
+				foreach (var rook in board.Pieces)
+				{
+					if (!rook.isRook || !rook.onInitialPosition)
+						continue;
+
+					builder.AddCastling(this, rook);
+				}
+			}
 			
 			if (validate)
 				return builder.GetMoves()
-								.Where(x => _gameRules.IsMoveValid(this, x, board));
+								.Where(x => _gameRules.IsMoveValid(this, x, board))
+								.ToList();
 
 			return builder.GetMoves();
 		}
 
 		public bool IsPieceEnemy(Piece piece) => piece != null && color != piece.color;
 
-		public void MoveTo(Vector2Int targetPoint, bool triggerEvent)
+		public void MoveTo(Vector2Int targetPoint)
 		{
 			// Try to capture piece occupying target point
 			Piece pieceOccupyingCell = board.GetCellPiece(targetPoint);
@@ -142,26 +158,33 @@ namespace Entity
 			transform.position = board.LocalToWorld(targetPoint);
 
 			board.InvalidateGrid();
-			board.NextPlayerTurn();
-
-			if (triggerEvent)
-			{
-				_gameRules.HandleTurnEvent(board);
-			}
 		}
 
 		public bool CanCapture(Piece piece)
 		{
-			var moves = GetPossibleMoves(false);
-
 			if (!IsPieceEnemy(piece))
 				return false;
-			
-			var piecePosition = piece.GetPositionOnBoard();
-			return moves.Contains(piecePosition);
+
+			var piecePosition = piece.Position;
+			return IsAttackingCell(piecePosition);
 		}
 
-		private void CapturePiece(Piece other)
+		public bool IsAttackingCell(Vector2Int cellPosition)
+		{
+			var moves = GetPossibleMoves(false);
+			if (moves.OfType<Step>().Any(x => x.Position == cellPosition))
+			{
+				return true;
+			}
+			else if (moves.OfType<Capture>().Any(x => x.Position == cellPosition))
+			{
+				return true;
+			}
+			
+			return false;
+		}
+
+		public void CapturePiece(Piece other)
 		{
 			other.Captured = true;
 			other.gameObject.SetActive(false);

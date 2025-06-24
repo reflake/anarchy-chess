@@ -19,7 +19,7 @@ namespace Player
 			
 			foreach (var move in possibleMoves)
 			{
-				var position = board.LocalToWorld(move);
+				var position = board.LocalToWorld(move.Position);
 				var offset = markerPrefab.transform.localPosition;
 				var newMarker = Instantiate(markerPrefab, position + offset, markerPrefab.transform.rotation);
 				
