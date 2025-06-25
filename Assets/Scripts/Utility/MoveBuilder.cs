@@ -98,8 +98,6 @@ namespace Utility
 				length--;
 
 			} while (length != 0);
-
-			_enPassantPawns = null;
 			
 			return this;
 		}

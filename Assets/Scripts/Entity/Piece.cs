@@ -84,7 +84,8 @@ namespace Entity
 				builder.EnPassantPawns(enPassantPawns)
 					   .Options(MoveOption.MustCapture)
 					   .AddSteps(moveDirection + Vector2Int.left, 
-								 moveDirection + Vector2Int.right);
+								 moveDirection + Vector2Int.right)
+					   .EnPassantPawns(null);
 			}
 
 			builder.Options(MoveOption.CanCapture)
