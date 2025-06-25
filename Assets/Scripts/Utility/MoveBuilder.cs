@@ -105,6 +105,7 @@ namespace Utility
 		{
 			var kingMoveDirection = rook.Position - king.Position;
 			kingMoveDirection.x /= Mathf.Abs(kingMoveDirection.x);
+			kingMoveDirection.y = 0;
 
 			// Check if anything is in the way
 			for (var i = king.Position + kingMoveDirection; i != rook.Position; i += kingMoveDirection)
@@ -113,6 +114,12 @@ namespace Utility
 					return this;
 				
 				if (_board.GetCellPiece(i))
+					return this;
+			}
+			
+			for(int i = 1; i <= 2; i++)
+			{
+				if (_board.IsCellUnderAttack(king.Color, king.Position + kingMoveDirection * i))
 					return this;
 			}
 			

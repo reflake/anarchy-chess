@@ -154,12 +154,19 @@ namespace Entity
 		{
 			var pieces = GetComponentsInChildren<Piece>(false);
 			var king = pieces.Single(x => x.IsKing && x.Color == colorToCheck);
+			
+			return IsCellUnderAttack(colorToCheck, king.Position);
+		}
+
+		public bool IsCellUnderAttack(PieceColor colorToCheck, Vector2Int position)
+		{
+			var pieces = GetComponentsInChildren<Piece>(false);
 			foreach (var opponentPiece in pieces)
 			{
 				if (opponentPiece.Color == colorToCheck)
 					continue;
 
-				if (opponentPiece.CanCapture(king))
+				if (opponentPiece.IsAttackingCell(position))
 					return true;
 			}
 

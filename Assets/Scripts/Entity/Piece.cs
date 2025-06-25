@@ -121,7 +121,7 @@ namespace Entity
 				{
 					if (!rook.isRook || 
 					    !rook.onInitialPosition || 
-					    Color == rook.Color)
+					    Color != rook.Color)
 						
 						continue;
 
@@ -160,15 +160,6 @@ namespace Entity
 			transform.position = board.LocalToWorld(targetPoint);
 
 			board.InvalidateGrid();
-		}
-
-		public bool CanCapture(Piece piece)
-		{
-			if (!IsPieceEnemy(piece))
-				return false;
-
-			var piecePosition = piece.Position;
-			return IsAttackingCell(piecePosition);
 		}
 
 		public bool IsAttackingCell(Vector2Int cellPosition)
