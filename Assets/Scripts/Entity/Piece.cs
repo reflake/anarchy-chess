@@ -34,6 +34,7 @@ namespace Entity
 		[SerializeField, EnumToggleButtons] private MovePattern pattern;
 		[SerializeField, HideInEditMode] private Board board = null;
 		[SerializeField, HideInEditMode] private bool onInitialPosition = true;
+		[SerializeField, HideInEditMode] private bool tookTwoSteps = false;
 		
 		public bool IsKing => isKing;
 		public PieceColor Color => color;
@@ -72,13 +73,16 @@ namespace Entity
 
 			if (pattern.HasFlag(MovePattern.Pawn))
 			{
-				var moveDirection = color == PieceColor.White ? Vector2Int.up : Vector2Int.down;
+				var moveDirection = PawnMoveDirection();
 				int stepLength = onInitialPosition ? 2 : 1;
 				
 				builder.Options(MoveOption.CannotCapture)
 						.AddStep(moveDirection, stepLength);
 
-				builder.Options(MoveOption.MustCapture)
+				var enPassantPawns = board.LastMovedPieces.Where(piece => piece.tookTwoSteps).ToArray();
+				
+				builder.EnPassantPawns(enPassantPawns)
+					   .Options(MoveOption.MustCapture)
 					   .AddSteps(moveDirection + Vector2Int.left, 
 								 moveDirection + Vector2Int.right);
 			}
@@ -137,29 +141,26 @@ namespace Entity
 			return builder.GetMoves();
 		}
 
+		public Vector2Int PawnMoveDirection()
+		{
+			return color == PieceColor.White ? Vector2Int.up : Vector2Int.down;
+		}
+
 		public bool IsPieceEnemy(Piece piece) => piece != null && color != piece.color;
 
 		public void MoveTo(Vector2Int targetPoint)
 		{
-			// Try to capture piece occupying target point
-			Piece pieceOccupyingCell = board.GetCellPiece(targetPoint);
-			if (pieceOccupyingCell != null)
+			if (pattern.HasFlag(MovePattern.Pawn))
 			{
-				if (IsPieceEnemy(pieceOccupyingCell))
-				{
-					CapturePiece(pieceOccupyingCell);
-				}
-				else
-				{
-					return;
-				}
-			}
+				int stepLength = Mathf.Abs(Position.y - targetPoint.y);
 
+				// Took two steps; can be en passant
+				tookTwoSteps = stepLength == 2;
+			}
+			
 			onInitialPosition = false;
 			
 			transform.position = board.LocalToWorld(targetPoint);
-
-			board.InvalidateGrid();
 		}
 
 		public bool IsAttackingCell(Vector2Int cellPosition)

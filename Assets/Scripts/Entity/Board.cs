@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Data;
+using TriInspector;
 using UnityEditor;
 using UnityEngine;
 
@@ -12,6 +13,8 @@ namespace Entity
 		[SerializeField] private PieceColor currentTurnPlayerColor;
 		[SerializeField] private float width, length;
 		[SerializeField] private int rows, columns;
+		
+		[field: SerializeField] public Piece[] LastMovedPieces { get; set; }
 		
 		public Bounds Bounds => new Bounds(Vector3.zero, new Vector3(width, 1f, length));
 		public PieceColor CurrentTurnPlayerColor => currentTurnPlayerColor;
@@ -191,6 +194,11 @@ namespace Entity
 		public void InvalidateGrid()
 		{
 			_cachedPieces = null;
+		}
+
+		public void SetLastMovedPieces(params Piece[] pieces)
+		{
+			LastMovedPieces = pieces;
 		}
 
 		private void OnDrawGizmosSelected()

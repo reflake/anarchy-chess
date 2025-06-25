@@ -15,14 +15,14 @@ namespace Entity
 
 		public void Perform()
 		{
-			PerformHandle(Board);
-			Board.NextPlayerTurn(true);
+			Perform(Board);
 		}
 
 		public void Perform(Board board)
 		{
 			PerformHandle(board);
 			board.NextPlayerTurn(false);
+			board.InvalidateGrid();
 		}
 		
 		protected abstract void PerformHandle(Board board);
@@ -41,6 +41,8 @@ namespace Entity
 		{
 			Piece piece = board.GetCellPiece(PiecePosition);
 			piece.MoveTo(Position);
+
+			board.SetLastMovedPieces(piece);
 		}
 	}
 
@@ -62,6 +64,8 @@ namespace Entity
 			
 			piece.CapturePiece(capturedPiece);
 			piece.MoveTo(Position);
+
+			board.SetLastMovedPieces(piece);
 		}
 	}
 	
@@ -85,6 +89,8 @@ namespace Entity
 			
 			king.MoveTo(Position);
 			rook.MoveTo(Position + RookDirection);
+
+			board.SetLastMovedPieces(king, rook);
 		}
 	}
 }

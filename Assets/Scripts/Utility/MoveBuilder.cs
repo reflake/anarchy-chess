@@ -23,6 +23,7 @@ namespace Utility
 		private List<Move> _probableMoves = new();
 		private MoveOption _options = MoveOption.CannotCapture;
 		private int _stepLength = 1;
+		private Piece[] _enPassantPawns = null;
 
 		public MoveBuilder(Piece piece, Board board)
 		{
@@ -72,23 +73,23 @@ namespace Utility
 			{
 				newPosition += moveDirection;
 				
-				Piece otherPiece = _board.GetCellPiece(newPosition);
 				bool outOfBound = !_board.IsPositionOnBoard(newPosition);
-				bool isCellEmpty = !otherPiece;
-				bool captures = _options.HasFlag(MoveOption.CanCapture) && _piece.IsPieceEnemy(otherPiece);
-				bool mustCapture = _options.HasFlag(MoveOption.MustCapture);
 
 				if (outOfBound)
 					break;
 				
-				if (!mustCapture && (isCellEmpty || captures) || 
-				    mustCapture && captures)
+				Piece occupyingPiece = _board.GetCellPiece(newPosition);
+
+				if (!occupyingPiece && _enPassantPawns != null)
 				{
-					if (isCellEmpty)
-						_probableMoves.Add(new Step(_piece, newPosition));
-					else
-						_probableMoves.Add(new Capture(_piece, otherPiece, newPosition));
+					var attackingCell = newPosition - _piece.PawnMoveDirection();
+					var pieceBeignAttacked = _board.GetCellPiece(attackingCell);
+					
+					if (pieceBeignAttacked && _enPassantPawns.Contains(pieceBeignAttacked))
+						occupyingPiece = pieceBeignAttacked;
 				}
+				
+				var isCellEmpty = AddStep(occupyingPiece, newPosition);
 
 				// Taking next steps until hit an occupied cell
 				if (!isCellEmpty)
@@ -97,8 +98,28 @@ namespace Utility
 				length--;
 
 			} while (length != 0);
+
+			_enPassantPawns = null;
 			
 			return this;
+		}
+
+		private bool AddStep(Piece occupyingPiece, Vector2Int newPosition)
+		{
+			bool isCellEmpty = !occupyingPiece;
+			bool captures = _options.HasFlag(MoveOption.CanCapture) && _piece.IsPieceEnemy(occupyingPiece);
+			bool mustCapture = _options.HasFlag(MoveOption.MustCapture);
+				
+			if (!mustCapture && (isCellEmpty || captures) || 
+			    mustCapture && captures)
+			{
+				if (isCellEmpty)
+					_probableMoves.Add(new Step(_piece, newPosition));
+				else
+					_probableMoves.Add(new Capture(_piece, occupyingPiece, newPosition));
+			}
+
+			return isCellEmpty;
 		}
 
 		public MoveBuilder AddCastling(Piece king, Piece rook)
@@ -125,6 +146,12 @@ namespace Utility
 			
 			_probableMoves.Add(new Castling(king, rook, -kingMoveDirection, king.Position + kingMoveDirection * 2));
 			
+			return this;
+		}
+
+		public MoveBuilder EnPassantPawns(Piece[] enPassantPawns)
+		{
+			_enPassantPawns = enPassantPawns;
 			return this;
 		}
 
