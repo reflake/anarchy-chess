@@ -73,19 +73,18 @@ namespace Entity
 			if (pattern.HasFlag(MovePattern.Pawn))
 			{
 				var moveDirection = color == PieceColor.White ? Vector2Int.up : Vector2Int.down;
+				int stepLength = onInitialPosition ? 2 : 1;
 				
 				builder.Options(MoveOption.CannotCapture)
-						.AddStep(moveDirection, false);
-
-				if (onInitialPosition)
-					builder.AddStep(moveDirection * 2);
+						.AddStep(moveDirection, stepLength);
 
 				builder.Options(MoveOption.MustCapture)
 					   .AddSteps(moveDirection + Vector2Int.left, 
 								 moveDirection + Vector2Int.right);
 			}
 
-			builder.Options(MoveOption.CanCapture);
+			builder.Options(MoveOption.CanCapture)
+					.Loop(false);
 
 			if (pattern.HasFlag(MovePattern.Knight))
 			{
@@ -120,7 +119,10 @@ namespace Entity
 			{
 				foreach (var rook in board.Pieces)
 				{
-					if (!rook.isRook || !rook.onInitialPosition)
+					if (!rook.isRook || 
+					    !rook.onInitialPosition || 
+					    Color == rook.Color)
+						
 						continue;
 
 					builder.AddCastling(this, rook);

@@ -21,8 +21,8 @@ namespace Utility
 		private readonly Vector2Int _myPosition;
 		
 		private List<Move> _probableMoves = new();
-		private bool _loop = false;
 		private MoveOption _options = MoveOption.CannotCapture;
+		private int _stepLength = 1;
 
 		public MoveBuilder(Piece piece, Board board)
 		{
@@ -33,7 +33,15 @@ namespace Utility
 
 		public MoveBuilder Loop(bool loop)
 		{
-			_loop = loop;
+			if (loop)
+			{
+				// Move infinitely
+				_stepLength = 0;
+			}
+			else
+			{
+				_stepLength = 1;
+			}
 			return this;
 		}
 
@@ -53,12 +61,12 @@ namespace Utility
 			return this;
 		}
 
-		public MoveBuilder AddStep(Vector2Int moveDirection, bool? loop = null)
+		public MoveBuilder AddStep(Vector2Int moveDirection, int? length = null)
 		{
 			var newPosition = _myPosition;
 			
-			if (!loop.HasValue)
-				loop = _loop;
+			if (!length.HasValue)
+				length = _stepLength;
 
 			do
 			{
@@ -83,9 +91,12 @@ namespace Utility
 				}
 
 				// Taking next steps until hit an occupied cell
-				loop = loop.Value && isCellEmpty;
+				if (!isCellEmpty)
+					return this;
+				
+				length--;
 
-			} while (loop.Value);
+			} while (length != 0);
 			
 			return this;
 		}
